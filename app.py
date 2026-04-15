@@ -551,9 +551,9 @@ def main():
 
     display = df[["Title","Type","Agency","Score","Deadline"]]
     styled  = (display.style
-               .applymap(style_type,     subset=["Type"])
-               .applymap(style_deadline, subset=["Deadline"])
-               .applymap(style_score,    subset=["Score"])
+               .map(style_type,     subset=["Type"])
+               .map(style_deadline, subset=["Deadline"])
+               .map(style_score,    subset=["Score"])
                .format({"Score": "{}%"})
                .set_properties(**{"font-size": "13px"}))
 
