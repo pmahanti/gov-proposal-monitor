@@ -169,8 +169,10 @@ def run_scan(keywords: list[str] | None = None, agencies: list[str] | None = Non
 
     log(f"Scanning {', '.join(agencies)} · {len(keywords)} keywords…")
 
-    api_key = (st.secrets.get("ANTHROPIC_API_KEY") if hasattr(st, "secrets") else None) \
-              or os.environ.get("ANTHROPIC_API_KEY", "")
+    try:
+        api_key = st.secrets["ANTHROPIC_API_KEY"]
+    except Exception:
+        api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
         log("ANTHROPIC_API_KEY not set", "error")
         return 0
