@@ -1314,10 +1314,11 @@ def main():
         st.divider()
         show_wdays = st.toggle("Show working days", value=False)
 
-        if st.button("Scan Opportunities", use_container_width=True, type="primary"):
+        if st.button("Scan Opportunities", use_container_width=True, type="primary", key="sidebar_scan"):
             with st.spinner("Searching federal procurement databases..."):
                 n = run_scan(new_kw, new_ag)
             st.success(f"Found {n} opportunities")
+            st.rerun()
 
         if st.button("Scan News", use_container_width=True, key="sidebar_news"):
             with st.spinner("Searching space industry news..."):
@@ -1326,8 +1327,26 @@ def main():
             st.rerun()
 
         st.markdown("**Sources**")
-        for s in ["SAM.gov (PDF)","SBIR.gov","NASA SEWP","SpaceWERX","DARPA.mil","USASpending","SpaceNews","Breaking Defense","NASASpaceflight","DefenseNews"]:
+        for s in ["SAM.gov (PDF)","SBIR.gov","NASA SEWP","SpaceWERX",
+                  "DARPA.mil","USASpending","SpaceNews","Breaking Defense",
+                  "NASASpaceflight","DefenseNews"]:
             st.caption(f"* {s}")
+
+        st.divider()
+        st.markdown("**Navigation**")
+        PAGES = ["Opportunities", "Historical Funding", "News Intel", "PDF Parser"]
+        if "page" not in st.session_state:
+            st.session_state.page = "Opportunities"
+        for p in PAGES:
+            active = st.session_state.page == p
+            if st.button(
+                p,
+                key=f"nav_{p}",
+                use_container_width=True,
+                type="primary" if active else "secondary",
+            ):
+                st.session_state.page = p
+                st.rerun()
 
     # -- Header ---------------------------------------------------------------
     last_ts  = cfg_get("last_scanned")
@@ -1341,28 +1360,12 @@ def main():
     st.markdown("## Gov Proposal Monitor")
     st.caption(last_lbl)
 
-    # -- Top-level tabs -------------------------------------------------------
-    # ── Page navigation via sidebar ──────────────────────────────────────────
+    # -- Page routing ---------------------------------------------------------
     PAGES = ["Opportunities", "Historical Funding", "News Intel", "PDF Parser"]
     if "page" not in st.session_state:
         st.session_state.page = "Opportunities"
-    # Allow other buttons to navigate here
     if st.session_state.page not in PAGES:
         st.session_state.page = "Opportunities"
-
-    with st.sidebar:
-        st.divider()
-        st.markdown("**Navigation**")
-        for p in PAGES:
-            active = st.session_state.page == p
-            if st.button(
-                p,
-                key=f"nav_{p}",
-                use_container_width=True,
-                type="primary" if active else "secondary",
-            ):
-                st.session_state.page = p
-                st.rerun()
 
     page = st.session_state.page
 
